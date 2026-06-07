@@ -1,0 +1,52 @@
+{% extends "layouts/base.html" %}
+{% from "components/bid_panel.html" import bid_panel %}
+
+{% block title %}{{ auction.item.item_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-6">
+    <p class="text-sm mb-4"><a href="{{ url_for('public.home') }}" class="link">Back</a></p>
+
+    <h1 class="text-lg font-bold mb-4">{{ auction.item.item_name }}</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+            {% if auction.item.description %}
+            <p class="text-sm mb-4">{{ auction.item.description }}</p>
+            {% endif %}
+            <dl class="text-sm space-y-1">
+                <div><dt class="inline text-gray-500">Condition: </dt><dd class="inline">{{ auction.item.item_condition or 'N/A' }}</dd></div>
+                <div><dt class="inline text-gray-500">Seller: </dt><dd class="inline">{{ auction.seller_login }}</dd></div>
+            </dl>
+        </div>
+        <div>
+            {{ bid_panel(auction) }}
+            {% if current_user_role == 'Seller' and current_user_login == auction.seller_login %}
+            <p class="mt-3"><a href="{{ url_for('seller.manage_auction', auction_id=auction.auction_id) }}" class="link">Manage Auction</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h2 class="font-bold mb-2">Bid History</h2>
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-left px-2 py-1">Bidder</th>
+                <th class="text-right px-2 py-1">Amount</th>
+                <th class="text-right px-2 py-1">Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bid in bids %}
+            <tr>
+                <td class="px-2 py-1">{{ bid.buyer_login }}</td>
+                <td class="px-2 py-1 text-right">{{ bid.bid_amount|currency }}</td>
+                <td class="px-2 py-1 text-right text-gray-500">{{ bid.bid_timestamp|datetime_fmt }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="px-2 py-4 text-center text-gray-500">No bids yet</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

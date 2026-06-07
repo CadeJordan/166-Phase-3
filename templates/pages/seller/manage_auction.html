@@ -1,0 +1,39 @@
+{% extends "layouts/base.html" %}
+{% from "components/status_badge.html" import status_badge %}
+
+{% block title %}Manage Auction{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-2">{{ auction.item.item_name }}</h1>
+    <p class="text-sm mb-4">Status: {{ status_badge(auction.auction_status) }} | High bid: {{ auction.current_highest_bid|currency }} | Winner: {{ auction.winner_login or '—' }}</p>
+
+    {% if auction.auction_status == 'Active' %}
+    <form method="post" class="mb-6">
+        <button type="submit" name="action" value="end_auction" class="btn-primary">End Auction</button>
+    </form>
+    {% endif %}
+
+    <h2 class="font-bold mb-2">Bids</h2>
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-left px-2 py-1">Bidder</th>
+                <th class="text-right px-2 py-1">Amount</th>
+                <th class="text-right px-2 py-1">Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bid in bids %}
+            <tr>
+                <td class="px-2 py-1">{{ bid.buyer_login }}</td>
+                <td class="px-2 py-1 text-right">{{ bid.bid_amount|currency }}</td>
+                <td class="px-2 py-1 text-right">{{ bid.bid_timestamp|datetime_fmt }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="px-2 py-4 text-center text-gray-500">No bids</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

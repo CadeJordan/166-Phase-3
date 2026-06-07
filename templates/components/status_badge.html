@@ -1,0 +1,4 @@
+{% macro status_badge(status) %}
+{% set status_lower = status|lower %}
+<span class="status-badge status-{{ status_lower }}">{{ status }}</span>
+{% endmacro %}

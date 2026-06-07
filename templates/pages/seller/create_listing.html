@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+{% from "components/form_field.html" import form_field %}
+
+{% block title %}List Item{% endblock %}
+
+{% block content %}
+<div class="max-w-sm mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">List Item</h1>
+    <form method="post">
+        {{ form_field("Item Name", "item_name", required=true) }}
+        {{ form_field("Category", "category", required=true) }}
+        {{ form_field("Starting Price", "starting_price", type="number", required=true) }}
+        {{ form_field("Condition", "item_condition") }}
+        {{ form_field("Description", "description", type="textarea") }}
+        <button type="submit" class="btn-primary mt-2">Start Auction</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Shipments{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Shipments</h1>
+    <form method="post">
+        <table class="w-full text-sm mb-4">
+            <thead>
+                <tr>
+                    <th class="text-left px-2 py-1">ID</th>
+                    <th class="text-left px-2 py-1">Auction</th>
+                    <th class="text-left px-2 py-1">Address</th>
+                    <th class="text-left px-2 py-1">Status</th>
+                    <th class="text-left px-2 py-1">Tracking</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shipment in shipments %}
+                <tr>
+                    <td class="px-2 py-1">{{ shipment.shipment_id }}</td>
+                    <td class="px-2 py-1">{% if shipment.auction %}{{ shipment.auction.item.item_name }}{% else %}#{{ shipment.auction_id }}{% endif %}</td>
+                    <td class="px-2 py-1">{{ shipment.address }}</td>
+                    <td class="px-2 py-1">
+                        <select name="status_{{ shipment.shipment_id }}" class="border px-1 py-0.5 text-sm">
+                            {% for s in ['Pending', 'Shipped', 'Delivered'] %}
+                            <option value="{{ s }}" {% if shipment.shipment_status == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="px-2 py-1">
+                        <input type="text" name="tracking_{{ shipment.shipment_id }}" value="{{ shipment.tracking_number or '' }}" class="border px-1 py-0.5 text-sm w-full">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if shipments %}<button type="submit" class="btn-primary">Save</button>{% endif %}
+    </form>
+</div>
+{% endblock %}

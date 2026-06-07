@@ -1,0 +1,17 @@
+{% extends "layouts/base.html" %}
+{% from "components/status_badge.html" import status_badge %}
+
+{% block title %}Payment{% endblock %}
+
+{% block content %}
+<div class="max-w-sm mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Payment</h1>
+    <p class="mb-2">{{ auction.item.item_name }}</p>
+    <p class="mb-2">Amount: {{ (payment.amount if payment else auction.current_highest_bid)|currency }}</p>
+    <p class="mb-4">Status: {% if payment %}{{ status_badge(payment.payment_status) }}{% else %}{{ status_badge('Pending') }}{% endif %}</p>
+
+    {% if not payment or payment.payment_status == 'Pending' %}
+    <form method="post"><button type="submit" class="btn-cta">Pay Now</button></form>
+    {% endif %}
+</div>
+{% endblock %}

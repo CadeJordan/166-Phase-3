@@ -1,0 +1,31 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Bids{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Bids</h1>
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-left px-2 py-1">Item</th>
+                <th class="text-right px-2 py-1">Your Bid</th>
+                <th class="text-right px-2 py-1">Current High</th>
+                <th class="text-left px-2 py-1">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bid in bids %}
+            <tr>
+                <td class="px-2 py-1"><a href="{{ url_for('public.auction_detail', auction_id=bid.auction.auction_id) }}" class="link">{{ bid.auction.item.item_name }}</a></td>
+                <td class="px-2 py-1 text-right">{{ bid.bid_amount|currency }}</td>
+                <td class="px-2 py-1 text-right">{{ bid.auction.current_highest_bid|currency }}</td>
+                <td class="px-2 py-1">{{ bid.auction.auction_status }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="px-2 py-4 text-center text-gray-500">No bids</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
