@@ -1,0 +1,38 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}My Listings{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">My Listings</h1>
+    <p class="mb-4"><a href="{{ url_for('seller.create_listing') }}" class="link">List new item</a></p>
+
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-left px-2 py-1">Item</th>
+                <th class="text-right px-2 py-1">Starting</th>
+                <th class="text-right px-2 py-1">Current Bid</th>
+                <th class="text-left px-2 py-1">Status</th>
+                <th class="text-left px-2 py-1">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings %}
+            <tr>
+                <td class="px-2 py-1">{{ listing.item.item_name }}</td>
+                <td class="px-2 py-1 text-right">{{ listing.item.starting_price|currency }}</td>
+                <td class="px-2 py-1 text-right">{% if listing.auction %}{{ listing.auction.current_highest_bid|currency }}{% else %}—{% endif %}</td>
+                <td class="px-2 py-1">{% if listing.auction %}{{ listing.auction.auction_status }}{% else %}—{% endif %}</td>
+                <td class="px-2 py-1">
+                    <a href="{{ url_for('seller.edit_listing', item_id=listing.item.item_id) }}" class="link">Edit</a>
+                    {% if listing.auction %} | <a href="{{ url_for('seller.manage_auction', auction_id=listing.auction.auction_id) }}" class="link">Manage</a>{% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="px-2 py-4 text-center text-gray-500">No listings</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+{% from "components/form_field.html" import form_field %}
+
+{% block title %}Account{% endblock %}
+
+{% block content %}
+<div class="max-w-sm mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Account</h1>
+
+    <form method="post">
+        {{ form_field("Login", "login", value=user.login, readonly=true) }}
+        {{ form_field("Role", "role", value=user.role, readonly=true) }}
+        {{ form_field("Phone", "phone_num", value=user.phone_num, required=true) }}
+        {{ form_field("Address", "address", value=user.address, required=true) }}
+        <button type="submit" class="btn-primary mt-2">Save</button>
+    </form>
+</div>
+{% endblock %}

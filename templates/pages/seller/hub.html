@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Sell{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Seller Hub — {{ seller.login }}</h1>
+    <p class="text-sm mb-4">Active listings: {{ active_listings }} | Total bids: {{ total_bids }}</p>
+    <p class="mb-6"><a href="{{ url_for('seller.create_listing') }}" class="link">List new item</a> | <a href="{{ url_for('seller.listings') }}" class="link">My listings</a></p>
+
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-left px-2 py-1">Item</th>
+                <th class="text-right px-2 py-1">Bid</th>
+                <th class="text-left px-2 py-1">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings[:5] %}
+            <tr>
+                <td class="px-2 py-1">
+                    {% if listing.auction %}
+                    <a href="{{ url_for('public.auction_detail', auction_id=listing.auction.auction_id) }}" class="link">{{ listing.item.item_name }}</a>
+                    {% else %}
+                    {{ listing.item.item_name }}
+                    {% endif %}
+                </td>
+                <td class="px-2 py-1 text-right">{% if listing.auction %}{{ listing.auction.current_highest_bid|currency }}{% else %}—{% endif %}</td>
+                <td class="px-2 py-1">{% if listing.auction %}{{ listing.auction.auction_status }}{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

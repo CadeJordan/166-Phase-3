@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Admin</h1>
+    <ul class="text-sm space-y-2 mb-6">
+        <li>Users: {{ stats.total_users }}</li>
+        <li>Active auctions: {{ stats.active_auctions }}</li>
+        <li>Pending payments: {{ stats.pending_payments }}</li>
+        <li>Pending shipments: {{ stats.pending_shipments }}</li>
+    </ul>
+    <p class="space-x-3 text-sm">
+        <a href="{{ url_for('admin.users') }}" class="link">Users</a>
+        <a href="{{ url_for('admin.auctions') }}" class="link">Auctions</a>
+        <a href="{{ url_for('admin.items') }}" class="link">Items</a>
+        <a href="{{ url_for('admin.payments') }}" class="link">Payments</a>
+        <a href="{{ url_for('admin.shipments') }}" class="link">Shipments</a>
+    </p>
+</div>
+{% endblock %}

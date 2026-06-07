@@ -1,0 +1,19 @@
+{% extends "layouts/base.html" %}
+{% from "components/form_field.html" import form_field %}
+
+{% block title %}Edit Listing{% endblock %}
+
+{% block content %}
+<div class="max-w-sm mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Edit Listing</h1>
+    <form method="post">
+        {{ form_field("Item Name", "item_name", value=item.item_name, required=true) }}
+        {{ form_field("Category", "category", value=item.category, required=true) }}
+        {{ form_field("Starting Price", "starting_price", type="number", value=item.starting_price, required=true) }}
+        {{ form_field("Condition", "item_condition", value=item.item_condition or "") }}
+        {{ form_field("Description", "description", type="textarea", value=item.description or "") }}
+        <button type="submit" class="btn-primary mt-2">Save</button>
+        <a href="{{ url_for('seller.listings') }}" class="link ml-3">Cancel</a>
+    </form>
+</div>
+{% endblock %}

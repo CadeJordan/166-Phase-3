@@ -1,0 +1,39 @@
+<header class="border-b bg-white">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
+        <a href="{{ url_for('public.home') }}" class="text-xl font-bold text-ebay-red shrink-0">eBay</a>
+
+        <form action="{{ url_for('public.search') }}" method="get" class="flex-1 flex gap-2 min-w-0">
+            <input type="text" name="q" placeholder="Search"
+                   class="flex-1 border px-3 py-1.5 text-sm min-w-0">
+            <button type="submit" class="btn-primary text-sm shrink-0">Search</button>
+        </form>
+
+        <div class="flex items-center gap-3 text-sm shrink-0">
+            {% if current_user_login %}
+            <span class="text-gray-600">{{ current_user_login }} ({{ current_user_role }})</span>
+            <a href="{{ url_for('auth.logout') }}" class="link">Sign Out</a>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="link">Sign In</a>
+            <a href="{{ url_for('auth.register') }}" class="link">Register</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <nav class="border-t bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 py-2 flex flex-wrap gap-3 text-sm">
+            <a href="{{ url_for('public.home') }}" class="link">Home</a>
+            {% if current_user_role == 'Buyer' or not current_user_role %}
+            <a href="{{ url_for('buyer.bids') }}" class="link">Bids</a>
+            <a href="{{ url_for('buyer.wins') }}" class="link">Wins</a>
+            <a href="{{ url_for('buyer.account') }}" class="link">Account</a>
+            {% endif %}
+            {% if current_user_role == 'Seller' %}
+            <a href="{{ url_for('seller.hub') }}" class="link">Sell</a>
+            <a href="{{ url_for('seller.listings') }}" class="link">My Listings</a>
+            {% endif %}
+            {% if current_user_role == 'Admin' %}
+            <a href="{{ url_for('admin.dashboard') }}" class="link">Admin</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>

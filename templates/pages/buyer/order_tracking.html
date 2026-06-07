@@ -1,0 +1,21 @@
+{% extends "layouts/base.html" %}
+{% from "components/status_badge.html" import status_badge %}
+
+{% block title %}Order{% endblock %}
+
+{% block content %}
+<div class="max-w-sm mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Order</h1>
+    <p class="mb-2">{{ auction.item.item_name }}</p>
+
+    {% if shipment %}
+    <p class="mb-2">Status: {{ status_badge(shipment.shipment_status) }}</p>
+    <p class="mb-2 text-sm">Address: {{ shipment.address }}</p>
+    {% if shipment.tracking_number %}
+    <p class="text-sm">Tracking: {{ shipment.tracking_number }}</p>
+    {% endif %}
+    {% else %}
+    <p class="text-gray-500">No shipment yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

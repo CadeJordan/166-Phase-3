@@ -1,0 +1,19 @@
+{% extends "layouts/base.html" %}
+{% from "components/form_field.html" import form_field %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="max-w-sm mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Register</h1>
+    <p class="text-sm text-gray-500 mb-4">New accounts default to Buyer role.</p>
+
+    <form method="post">
+        {{ form_field("Phone", "phone_num", required=true) }}
+        {{ form_field("Login", "login", required=true) }}
+        {{ form_field("Password", "password", type="password", required=true) }}
+        {{ form_field("Address", "address", required=true) }}
+        <button type="submit" class="btn-primary mt-2">Register</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% from "components/status_badge.html" import status_badge %}
+
+{% macro auction_card(auction) %}
+<a href="{{ url_for('public.auction_detail', auction_id=auction.auction_id) }}" class="auction-card p-3">
+    <h3 class="font-medium mb-1">{{ auction.item.item_name }}</h3>
+    <p class="text-sm mb-1">{{ auction.current_highest_bid|currency }}</p>
+    {{ status_badge(auction.auction_status) }}
+</a>
+{% endmacro %}
