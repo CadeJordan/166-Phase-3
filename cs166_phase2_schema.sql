@@ -32,7 +32,6 @@ CREATE TABLE item (
         ON DELETE RESTRICT
 );
 
-
 CREATE TABLE auction (
     auction_id INT PRIMARY KEY,
     item_id INT NOT NULL UNIQUE,
@@ -57,7 +56,6 @@ CREATE TABLE auction (
         ON DELETE SET NULL
 );
 
-
 CREATE TABLE bid (
     bid_id INT PRIMARY KEY,
     auction_id INT NOT NULL,
@@ -73,7 +71,6 @@ CREATE TABLE bid (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-
 
 CREATE TABLE payment (
     payment_id INT PRIMARY KEY,
@@ -91,7 +88,6 @@ CREATE TABLE payment (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-
 
 CREATE TABLE shipment (
     shipment_id INT PRIMARY KEY,
