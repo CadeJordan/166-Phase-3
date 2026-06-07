@@ -1,0 +1,33 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Auctions{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Auctions</h1>
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-left px-2 py-1">ID</th>
+                <th class="text-left px-2 py-1">Item</th>
+                <th class="text-left px-2 py-1">Seller</th>
+                <th class="text-right px-2 py-1">Bid</th>
+                <th class="text-left px-2 py-1">Status</th>
+                <th class="text-left px-2 py-1">Winner</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for auction in auctions %}
+            <tr>
+                <td class="px-2 py-1">{{ auction.auction_id }}</td>
+                <td class="px-2 py-1"><a href="{{ url_for('public.auction_detail', auction_id=auction.auction_id) }}" class="link">{{ auction.item.item_name }}</a></td>
+                <td class="px-2 py-1">{{ auction.seller_login }}</td>
+                <td class="px-2 py-1 text-right">{{ auction.current_highest_bid|currency }}</td>
+                <td class="px-2 py-1">{{ auction.auction_status }}</td>
+                <td class="px-2 py-1">{{ auction.winner_login or '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

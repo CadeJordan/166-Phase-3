@@ -1,0 +1,35 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Items{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Items</h1>
+    <form method="post">
+        <table class="w-full text-sm mb-4">
+            <thead>
+                <tr>
+                    <th class="text-left px-2 py-1">ID</th>
+                    <th class="text-left px-2 py-1">Name</th>
+                    <th class="text-left px-2 py-1">Seller</th>
+                    <th class="text-right px-2 py-1">Price</th>
+                    <th class="text-left px-2 py-1">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="px-2 py-1">{{ item.item_id }}</td>
+                    <td class="px-2 py-1">{{ item.item_name }}</td>
+                    <td class="px-2 py-1">{{ item.seller_login }}</td>
+                    <td class="px-2 py-1 text-right">{{ item.starting_price|currency }}</td>
+                    <td class="px-2 py-1">
+                        <button type="submit" name="remove_item" value="{{ item.item_id }}" class="link bg-transparent border-0 cursor-pointer p-0">Remove</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+{% endblock %}

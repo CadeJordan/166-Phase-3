@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+{% from "components/auction_card.html" import auction_card %}
+
+{% block title %}eBay — Search{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-6">
+    <h1 class="text-lg font-bold mb-4">
+        {% if query %}Search: {{ query }}{% else %}Search{% endif %}
+    </h1>
+
+    {% if auctions %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {% for auction in auctions %}
+        {{ auction_card(auction) }}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500">No results found.</p>
+    {% endif %}
+</div>
+{% endblock %}

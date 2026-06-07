@@ -16,10 +16,6 @@ CREATE TABLE users (
     UNIQUE (login, role)
 );
 
-COPY users
-FROM 'users.dat'
-WITH DELIMITER ',';
-
 CREATE TABLE item (
     item_id INT PRIMARY KEY,
     item_name VARCHAR(100) NOT NULL,
@@ -35,10 +31,6 @@ CREATE TABLE item (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-
-COPY item
-FROM 'item.dat'
-WITH DELIMITER ',';
 
 
 CREATE TABLE auction (
@@ -65,10 +57,6 @@ CREATE TABLE auction (
         ON DELETE SET NULL
 );
 
-COPY auction
-FROM 'auction.dat'
-WITH DELIMITER ',';
-
 
 CREATE TABLE bid (
     bid_id INT PRIMARY KEY,
@@ -85,10 +73,6 @@ CREATE TABLE bid (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-
-COPY bid
-FROM 'bid.dat'
-WITH DELIMITER ',';
 
 
 CREATE TABLE payment (
@@ -108,10 +92,6 @@ CREATE TABLE payment (
         ON DELETE RESTRICT
 );
 
-COPY payment
-FROM 'payment.dat'
-WITH DELIMITER ',';
-
 
 CREATE TABLE shipment (
     shipment_id INT PRIMARY KEY,
@@ -125,7 +105,3 @@ CREATE TABLE shipment (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-
-COPY shipment
-FROM 'shipment.dat'
-WITH DELIMITER ',';

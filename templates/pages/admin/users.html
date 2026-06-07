@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Users</h1>
+    <form method="post">
+        <table class="w-full text-sm mb-4">
+            <thead>
+                <tr>
+                    <th class="text-left px-2 py-1">Login</th>
+                    <th class="text-left px-2 py-1">Phone</th>
+                    <th class="text-left px-2 py-1">Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td class="px-2 py-1">{{ user.login }}</td>
+                    <td class="px-2 py-1">{{ user.phone_num }}</td>
+                    <td class="px-2 py-1">
+                        <select name="role_{{ user.login }}" class="border px-1 py-0.5 text-sm">
+                            {% for role in ['Buyer', 'Seller', 'Admin'] %}
+                            <option value="{{ role }}" {% if user.role == role %}selected{% endif %}>{{ role }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn-primary">Save</button>
+    </form>
+</div>
+{% endblock %}

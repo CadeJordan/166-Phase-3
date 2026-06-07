@@ -1,0 +1,24 @@
+{% macro data_table(headers, rows, empty_message="No records found.") %}
+<div class="overflow-x-auto border rounded-lg">
+    <table class="w-full text-sm">
+        <thead class="bg-ebay-light">
+            <tr>
+                {% for header in headers %}
+                <th class="text-left px-4 py-3 font-semibold text-gray-700">{{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody class="divide-y">
+            {% if rows %}
+                {{ caller() }}
+            {% else %}
+            <tr>
+                <td colspan="{{ headers|length }}" class="px-4 py-8 text-center text-gray-400">
+                    {{ empty_message }}
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}

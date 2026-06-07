@@ -1,0 +1,33 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Payments{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-4">Payments</h1>
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-left px-2 py-1">ID</th>
+                <th class="text-left px-2 py-1">Auction</th>
+                <th class="text-left px-2 py-1">Buyer</th>
+                <th class="text-right px-2 py-1">Amount</th>
+                <th class="text-left px-2 py-1">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td class="px-2 py-1">{{ payment.payment_id }}</td>
+                <td class="px-2 py-1">{% if payment.auction %}{{ payment.auction.item.item_name }}{% else %}#{{ payment.auction_id }}{% endif %}</td>
+                <td class="px-2 py-1">{{ payment.buyer_login }}</td>
+                <td class="px-2 py-1 text-right">{{ payment.amount|currency }}</td>
+                <td class="px-2 py-1">{{ payment.payment_status }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="px-2 py-4 text-center text-gray-500">No payments</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
