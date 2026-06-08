@@ -3,13 +3,13 @@ import psycopg2
 import psycopg2.extras
 
 
-DB_CONFIG = {
-    "dbname": None,
-    "dbport": "5432",
-    "user": None,
-    "passwd": "",
-}
-
+def configure_db(dbname, dbport, user, passwd=""):
+    """Create one shared EmbeddedSQL connection for all query functions."""
+    global _esql
+    if _esql is not None:
+        _esql.cleanup()
+    _esql = EmbeddedSQL(dbname, dbport, user, passwd)
+    return _esql
 
 def configure_db(dbname, dbport, user, passwd=""):
     """Set database connection info once before calling the query functions."""

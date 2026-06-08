@@ -2,17 +2,36 @@
 
 ## How to Run
 
-From the project root (this folder):
+**Terminal 1** — SSH tunnel (keep open):
 
 ```bash
-pip install flask
+ssh -L 5432:localhost:25967 cjord019@cs166.cs.ucr.edu
+```
+
+**Terminal 2** — on the server, start Postgres if needed:
+
+```bash
+cs166_db_start
+```
+
+**Terminal 3** — Flask on your laptop (project root):
+
+```bash
+pip install flask psycopg2-binary
 flask --app routes.app run --debug
 ```
 
-Then open http://127.0.0.1:5000 in your browser.
+Open http://127.0.0.1:5000
 
-If `pip` doesn't work, try `python -m pip install flask` instead.
+Database settings are in `config.py` (defaults: `cjord019_phase3_DB`, port `5432` through the tunnel). Override with env vars if needed:
 
+```powershell
+$env:DB_NAME="cjord019_phase3_DB"
+$env:DB_PORT="5432"
+$env:DB_USER="cjord019"
+```
+
+On startup you should see `Connecting to database... Done` from `EmbeddedSQL` (uses psycopg2).
 ## Demo logins
 
 Go to `/login` and pick one of these from the dropdown:
@@ -59,5 +78,6 @@ Password is not verified.
 
 ## Important notes
 
-- **Forms don't save anything.** If you submit a bid or register an account you'll get a message saying the backend isn't connected. That's expected.
-- **All database queries should go in `data/queries.py`.** The route files just call functions from there and pass data to templates. See `INTEGRATION.md` for which function connects to which page.
+- Flask connects to PostgreSQL on startup via `data/queries.py` → `EmbeddedSQL` (psycopg2).
+- Keep the SSH tunnel open while the app is running.
+- Load sample data on the server if tables are empty: `cs166_psql cjord019_phase3_DB < load_sample_data.sql`

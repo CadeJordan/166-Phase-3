@@ -43,9 +43,9 @@ class EmbeddedSQL:
             print(f"Connection URL: postgresql://localhost:{dbport}/{dbname}\n")
             print("Done")
         except Exception as e:
-            print(f"Error - Unable to Connect to Database: {e}", file=sys.stderr)
-            print("Make sure you started postgres on this machine")
-            sys.exit(-1)
+            raise ConnectionError(
+                f"Unable to connect to database postgresql://localhost:{dbport}/{dbname}: {e}"
+            ) from e
 
     def execute_update(self, sql):
         """

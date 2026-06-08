@@ -1,3 +1,4 @@
+import atexit
 from datetime import datetime
 import os
 
@@ -10,7 +11,19 @@ from routes import admin_bp, auth_bp, buyer_bp, public_bp, seller_bp
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def _init_db():
+    queries.configure_db(
+        config.DB_NAME,
+        config.DB_PORT,
+        config.DB_USER,
+        config.DB_PASSWORD,
+    )
+
+
 def create_app():
+    _init_db()
+    atexit.register(queries.cleanup)
+
     app = Flask(
         __name__,
         template_folder=os.path.join(ROOT, "templates"),
