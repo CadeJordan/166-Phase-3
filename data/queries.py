@@ -78,6 +78,33 @@ def setup_demo_data():
         esql.cleanup()
 
 
+# ----------------------------------------------------------
+# Row shaping helpers
+# Flat SQL rows -> nested dicts the Jinja templates expect
+# (e.g. auction.item.item_name).
+# ----------------------------------------------------------
+
+def _shape_item(row):
+    return {
+        "item_id": row.get("item_id"),
+        "item_name": row.get("item_name"),
+        "category": row.get("category"),
+        "starting_price": row.get("starting_price"),
+        "image_url": row.get("image_url"),
+        "item_condition": row.get("item_condition"),
+        "description": row.get("description"),
+    }
+
+
+def _shape_auction(row):
+    """Wrap a flat auction+item row so templates can read auction.item.*"""
+    if row is None:
+        return None
+    shaped = dict(row)
+    shaped["item"] = _shape_item(row)
+    return shaped
+
+
 def get_categories():
     return _fetch_all("SELECT DISTINCT category FROM item ORDER BY category;")
 
@@ -99,7 +126,7 @@ def get_item(item_id):
 
 
 def get_auction_with_item(auction_id):
-    return _fetch_one("SELECT a.auction_id, a.item_id, i.item_name, i.category, i.description, i.item_condition, i.starting_price, a.current_highest_bid, a.auction_status, a.seller_login, a.winner_login FROM auction a JOIN item i ON a.item_id = i.item_id WHERE a.auction_id = %s;", (auction_id,))
+    return _shape_auction(_fetch_one("SELECT a.auction_id, a.item_id, i.item_name, i.category, i.description, i.item_condition, i.starting_price, a.current_highest_bid, a.auction_status, a.seller_login, a.winner_login FROM auction a JOIN item i ON a.item_id = i.item_id WHERE a.auction_id = %s;", (auction_id,)))
 
 
 def get_bids_for_auction(auction_id):
@@ -135,33 +162,64 @@ def search_auctions(q="", category="", status="", sort="newest"):
     else:
         sql += " ORDER BY a.auction_id DESC;"
 
-    return _fetch_all(sql, tuple(params))
+    return [_shape_auction(r) for r in _fetch_all(sql, tuple(params))]
 
 
 def get_user_bids(login):
-    return _fetch_all("SELECT b.bid_id, b.auction_id, b.bid_amount, b.bid_timestamp, i.item_name, i.category, a.auction_status, a.current_highest_bid FROM bid b JOIN auction a ON b.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id WHERE b.buyer_login = %s ORDER BY b.bid_timestamp DESC;", (login,))
+    rows = _fetch_all("SELECT b.bid_id, b.auction_id, b.bid_amount, b.bid_timestamp, i.item_name, i.category, a.auction_status, a.current_highest_bid FROM bid b JOIN auction a ON b.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id WHERE b.buyer_login = %s ORDER BY b.bid_timestamp DESC;", (login,))
+    return [
+        {
+            "bid_id": r["bid_id"],
+            "auction_id": r["auction_id"],
+            "bid_amount": r["bid_amount"],
+            "bid_timestamp": r["bid_timestamp"],
+            "auction": {
+                "auction_id": r["auction_id"],
+                "current_highest_bid": r["current_highest_bid"],
+                "auction_status": r["auction_status"],
+                "item": {"item_name": r["item_name"], "category": r["category"]},
+            },
+        }
+        for r in rows
+    ]
 
 
 def get_user_wins(login):
-    return _fetch_all("SELECT a.auction_id, i.item_name, i.category, a.current_highest_bid, p.payment_status, s.shipment_status, s.tracking_number FROM auction a JOIN item i ON a.item_id = i.item_id LEFT JOIN payment p ON a.auction_id = p.auction_id LEFT JOIN shipment s ON a.auction_id = s.auction_id WHERE a.winner_login = %s AND a.auction_status = 'Closed' ORDER BY a.auction_id DESC;", (login,))
+    rows = _fetch_all("SELECT a.auction_id, i.item_name, i.category, a.current_highest_bid, p.payment_status, s.shipment_status, s.tracking_number FROM auction a JOIN item i ON a.item_id = i.item_id LEFT JOIN payment p ON a.auction_id = p.auction_id LEFT JOIN shipment s ON a.auction_id = s.auction_id WHERE a.winner_login = %s AND a.auction_status = 'Closed' ORDER BY a.auction_id DESC;", (login,))
+    return [_shape_auction(r) for r in rows]
 
 
 def get_seller_listings(login):
-    return _fetch_all("SELECT i.item_id, i.item_name, i.category, i.starting_price, i.item_condition, i.description, a.auction_id, a.current_highest_bid, a.auction_status, COUNT(b.bid_id) AS bid_count FROM item i LEFT JOIN auction a ON i.item_id = a.item_id LEFT JOIN bid b ON a.auction_id = b.auction_id WHERE i.seller_login = %s GROUP BY i.item_id, i.item_name, i.category, i.starting_price, i.item_condition, i.description, a.auction_id, a.current_highest_bid, a.auction_status ORDER BY i.item_id DESC;", (login,))
+    rows = _fetch_all("SELECT i.item_id, i.item_name, i.category, i.starting_price, i.item_condition, i.description, a.auction_id, a.current_highest_bid, a.auction_status, COUNT(b.bid_id) AS bid_count FROM item i LEFT JOIN auction a ON i.item_id = a.item_id LEFT JOIN bid b ON a.auction_id = b.auction_id WHERE i.seller_login = %s GROUP BY i.item_id, i.item_name, i.category, i.starting_price, i.item_condition, i.description, a.auction_id, a.current_highest_bid, a.auction_status ORDER BY i.item_id DESC;", (login,))
+    listings = []
+    for r in rows:
+        auction = None
+        if r.get("auction_id") is not None:
+            auction = {
+                "auction_id": r["auction_id"],
+                "current_highest_bid": r["current_highest_bid"],
+                "auction_status": r["auction_status"],
+            }
+        listings.append({"item": _shape_item(r), "auction": auction, "bid_count": r.get("bid_count", 0)})
+    return listings
 
 
 def get_all_auctions_enriched():
-    return _fetch_all("SELECT a.auction_id, i.item_name, i.category, a.seller_login, a.current_highest_bid, a.auction_status, a.winner_login, COUNT(b.bid_id) AS bid_count FROM auction a JOIN item i ON a.item_id = i.item_id LEFT JOIN bid b ON a.auction_id = b.auction_id GROUP BY a.auction_id, i.item_name, i.category, a.seller_login, a.current_highest_bid, a.auction_status, a.winner_login ORDER BY a.auction_id DESC;")
+    rows = _fetch_all("SELECT a.auction_id, i.item_name, i.category, a.seller_login, a.current_highest_bid, a.auction_status, a.winner_login, COUNT(b.bid_id) AS bid_count FROM auction a JOIN item i ON a.item_id = i.item_id LEFT JOIN bid b ON a.auction_id = b.auction_id GROUP BY a.auction_id, i.item_name, i.category, a.seller_login, a.current_highest_bid, a.auction_status, a.winner_login ORDER BY a.auction_id DESC;")
+    return [_shape_auction(r) for r in rows]
 
 
 def get_payments(status_filter=""):
     if status_filter:
-        return _fetch_all("SELECT p.payment_id, p.auction_id, p.buyer_login, p.amount, p.payment_status, i.item_name FROM payment p JOIN auction a ON p.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id WHERE p.payment_status = %s ORDER BY p.payment_id;", (status_filter,))
-    return _fetch_all("SELECT p.payment_id, p.auction_id, p.buyer_login, p.amount, p.payment_status, i.item_name FROM payment p JOIN auction a ON p.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id ORDER BY p.payment_id;")
+        rows = _fetch_all("SELECT p.payment_id, p.auction_id, p.buyer_login, p.amount, p.payment_status, i.item_name FROM payment p JOIN auction a ON p.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id WHERE p.payment_status = %s ORDER BY p.payment_id;", (status_filter,))
+    else:
+        rows = _fetch_all("SELECT p.payment_id, p.auction_id, p.buyer_login, p.amount, p.payment_status, i.item_name FROM payment p JOIN auction a ON p.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id ORDER BY p.payment_id;")
+    return [{**r, "auction": {"item": {"item_name": r["item_name"]}}} for r in rows]
 
 
 def get_shipments():
-    return _fetch_all("SELECT s.shipment_id, s.auction_id, s.address, s.shipment_status, s.tracking_number, i.item_name FROM shipment s JOIN auction a ON s.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id ORDER BY s.shipment_id;")
+    rows = _fetch_all("SELECT s.shipment_id, s.auction_id, s.address, s.shipment_status, s.tracking_number, i.item_name FROM shipment s JOIN auction a ON s.auction_id = a.auction_id JOIN item i ON a.item_id = i.item_id ORDER BY s.shipment_id;")
+    return [{**r, "auction": {"item": {"item_name": r["item_name"]}}} for r in rows]
 
 
 def get_admin_stats():
