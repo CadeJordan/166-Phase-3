@@ -5,11 +5,6 @@ from data import queries
 auth_bp = Blueprint("auth", __name__)
 
 
-def _stub_post_redirect():
-    flash("UI only — SQL backend not connected.", "info")
-    return redirect(request.referrer or url_for("public.home"))
-
-
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -29,7 +24,27 @@ def login():
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        return _stub_post_redirect()
+        phone_num = request.form.get("phone_num", "").strip()
+        login_name = request.form.get("login", "").strip()
+        password = request.form.get("password", "")
+        address = request.form.get("address", "").strip()
+
+        if not all([phone_num, login_name, password, address]):
+            flash("All fields are required.", "error")
+            return redirect(url_for("auth.register"))
+
+        if queries.get_user(login_name):
+            flash("That login is already taken.", "error")
+            return redirect(url_for("auth.register"))
+
+        try:
+            queries.register_user(phone_num, login_name, password, address)
+            flash("Account created. You can sign in now.", "success")
+            return redirect(url_for("auth.login"))
+        except Exception:
+            flash("Registration failed. Please try again.", "error")
+            return redirect(url_for("auth.register"))
+
     return render_template("pages/auth/register.html")
 
 
