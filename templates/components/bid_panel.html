@@ -1,17 +1,21 @@
 {% from "components/status_badge.html" import status_badge %}
 
-{% macro bid_panel(auction) %}
+{% macro bid_panel(auction, user_role=None) %}
 <div class="bid-panel">
     <p class="mb-2">{{ status_badge(auction.auction_status) }}</p>
     <p class="text-xl font-bold mb-4">{{ auction.current_highest_bid|currency }}</p>
 
     {% if auction.auction_status == 'Active' %}
-    <form method="post">
-        <label for="bid_amount" class="block text-sm mb-1">Bid amount</label>
-        <input type="number" id="bid_amount" name="bid_amount" step="0.01"
-               class="w-full border px-2 py-1 text-sm mb-2">
-        <button type="submit" class="btn-cta">Place Bid</button>
-    </form>
+        {% if user_role == 'Buyer' or not user_role %}
+        <form method="post">
+            <label for="bid_amount" class="block text-sm mb-1">Bid amount</label>
+            <input type="number" id="bid_amount" name="bid_amount" step="0.01"
+                   class="w-full border px-2 py-1 text-sm mb-2">
+            <button type="submit" class="btn-cta">Place Bid</button>
+        </form>
+        {% else %}
+        <p class="text-sm text-gray-600">Only buyers can place bids.</p>
+        {% endif %}
     {% else %}
     <p class="text-sm text-gray-600">Auction ended. Winner: {{ auction.winner_login or 'N/A' }}</p>
     {% endif %}

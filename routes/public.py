@@ -30,12 +30,21 @@ def auction_detail(auction_id):
             flash("Sign in to place a bid.", "error")
             return redirect(url_for("auth.login"))
 
+        if session.get("demo_role") != "Buyer":
+            flash("Only buyers can place bids.", "error")
+            return redirect(url_for("public.auction_detail", auction_id=auction_id))
+
         bid_amount = request.form.get("bid_amount", type=float)
         if bid_amount is None:
             flash("Enter a valid bid amount.", "error")
             return redirect(url_for("public.auction_detail", auction_id=auction_id))
 
-        if queries.place_bid(auction_id, login, bid_amount):
+        try:
+            placed = queries.place_bid(auction_id, login, bid_amount)
+        except Exception:
+            placed = False
+
+        if placed:
             flash("Bid placed.", "success")
         else:
             flash(

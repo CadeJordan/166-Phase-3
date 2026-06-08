@@ -1,16 +1,3 @@
-#!/usr/bin/env python3
-# ----------------------------------------------------------
-# Template Python User Interface
-# ================================
-#
-# Database Management Systems
-# Department of Computer Science & Engineering
-# University of California - Riverside
-#
-# Target DBMS: 'Postgres'
-#
-# ----------------------------------------------------------
-
 import sys
 import psycopg2
 

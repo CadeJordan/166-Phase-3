@@ -4,8 +4,6 @@ import os
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
 DEBUG = os.environ.get("FLASK_DEBUG", "1") == "1"
 
-# PostgreSQL — connect to localhost when using SSH tunnel:
-#   ssh -L 5432:localhost:25967 cjord019@cs166.cs.ucr.edu
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_PORT = os.environ.get("DB_PORT", "5432")
 DB_NAME = os.environ.get("DB_NAME", "cjord019_phase3_DB")

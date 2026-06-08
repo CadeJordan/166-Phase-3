@@ -3,14 +3,16 @@ import sys
 import psycopg2
 import psycopg2.extras
 
+# Connection settings filled in by queries.configure_db()
 DB_CONFIG = {"dbname": "", "dbport": "", "user": "", "passwd": ""}
 
 
 class EmbeddedSQL:
-    """Small PostgreSQL helper class for Flask query functions."""
+    # psycopg2 wrapper used by the query functions
 
     def __init__(self, dbname, dbport, user, passwd=""):
         try:
+            # host is localhost because we connect through the SSH tunnel.
             self._connection = psycopg2.connect(
                 database=dbname,
                 user=user,

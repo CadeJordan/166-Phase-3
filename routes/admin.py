@@ -53,6 +53,17 @@ def payments():
     return render_template("pages/admin/payments.html", payments=queries.get_payments())
 
 
+@admin_bp.route("/admin/reports")
+def reports():
+    return render_template(
+        "pages/admin/reports.html",
+        active_by_category=queries.report_active_auctions_by_category(),
+        bids_by_buyer=queries.report_total_bids_by_buyer(),
+        auctions_by_seller=queries.report_auctions_by_seller(),
+        payments_by_status=queries.report_payments_by_status(),
+    )
+
+
 @admin_bp.route("/admin/shipments", methods=["GET", "POST"])
 def shipments():
     if request.method == "POST":

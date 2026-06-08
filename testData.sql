@@ -1,8 +1,5 @@
--- Test data converted from data/mock_data.py
--- Load with: cs166_psql cjord019_phase3_DB < testData.sql
--- Inserts are ordered to satisfy foreign keys (users -> item -> auction -> bid -> payment -> shipment).
+-- AI generated sample data for the auction database.
 
--- Clear existing rows (child tables first)
 DELETE FROM shipment;
 DELETE FROM payment;
 DELETE FROM bid;

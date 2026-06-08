@@ -14,6 +14,18 @@ ssh -L 5432:localhost:25967 cjord019@cs166.cs.ucr.edu
 cs166_db_start
 ```
 
+Then set up the database (run once, in order). The schema creates the tables,
+`index.sql` adds the performance indexes, and `testData.sql` loads sample rows:
+
+```bash
+cs166_psql cjord019_phase3_DB < cs166_phase2_schema.sql
+cs166_psql cjord019_phase3_DB < index.sql
+cs166_psql cjord019_phase3_DB < testData.sql
+```
+
+> Running `index.sql` is required — the app's queries rely on these indexes for
+> performance. The `CREATE INDEX IF NOT EXISTS` statements are safe to re-run.
+
 **Terminal 3** — Flask on your laptop (project root):
 
 ```bash
@@ -35,15 +47,6 @@ On startup you should see `Connecting to database... Done` from `EmbeddedSQL` (u
 ## Demo logins
 
 Go to `/login` and pick one of these from the dropdown:
-
-| Username | Role |
-|----------|------|
-| buyer1 | Buyer |
-| buyer2 | Buyer |
-| seller1 | Seller |
-| seller2 | Seller |
-| admin1 | Admin |
-
 Password is not verified.
 
 ## Pages
@@ -51,7 +54,7 @@ Password is not verified.
 **Public**
 - `/` - list of auctions
 - `/search` - search by item name
-- `/auction/<id>` - auction details + place bid form (doesn't work yet)
+- `/auction/<id>` - auction details + place bid form
 - `/login`, `/register`
 
 **Buyer**
@@ -80,4 +83,5 @@ Password is not verified.
 
 - Flask connects to PostgreSQL on startup via `data/queries.py` → `EmbeddedSQL` (psycopg2).
 - Keep the SSH tunnel open while the app is running.
-- Load sample data on the server if tables are empty: `cs166_psql cjord019_phase3_DB < load_sample_data.sql`
+- Make sure `index.sql` has been run on the server (see Terminal 2 setup above).
+- Reload sample data on the server if tables are empty: `cs166_psql cjord019_phase3_DB < testData.sql`

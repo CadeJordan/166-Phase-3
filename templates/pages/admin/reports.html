@@ -1,0 +1,99 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-lg font-bold mb-6">Reports</h1>
+
+    <section class="mb-8">
+        <h2 class="font-bold mb-2">Active Auctions by Category</h2>
+        <table class="w-full text-sm">
+            <thead>
+                <tr>
+                    <th class="text-left px-2 py-1">Category</th>
+                    <th class="text-right px-2 py-1">Active Auctions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in active_by_category %}
+                <tr>
+                    <td class="px-2 py-1">{{ row.category }}</td>
+                    <td class="px-2 py-1 text-right">{{ row.active_auction_count }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" class="px-2 py-4 text-center text-gray-500">No data</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="font-bold mb-2">Total Bids by Buyer</h2>
+        <table class="w-full text-sm">
+            <thead>
+                <tr>
+                    <th class="text-left px-2 py-1">Buyer</th>
+                    <th class="text-right px-2 py-1">Total Bids</th>
+                    <th class="text-right px-2 py-1">Highest Bid</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in bids_by_buyer %}
+                <tr>
+                    <td class="px-2 py-1">{{ row.buyer_login }}</td>
+                    <td class="px-2 py-1 text-right">{{ row.total_bids }}</td>
+                    <td class="px-2 py-1 text-right">{{ row.highest_bid|currency }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" class="px-2 py-4 text-center text-gray-500">No data</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="font-bold mb-2">Auctions by Seller</h2>
+        <table class="w-full text-sm">
+            <thead>
+                <tr>
+                    <th class="text-left px-2 py-1">Seller</th>
+                    <th class="text-right px-2 py-1">Total Auctions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in auctions_by_seller %}
+                <tr>
+                    <td class="px-2 py-1">{{ row.seller_login }}</td>
+                    <td class="px-2 py-1 text-right">{{ row.total_auctions }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" class="px-2 py-4 text-center text-gray-500">No data</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="font-bold mb-2">Payments by Status</h2>
+        <table class="w-full text-sm">
+            <thead>
+                <tr>
+                    <th class="text-left px-2 py-1">Status</th>
+                    <th class="text-right px-2 py-1">Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in payments_by_status %}
+                <tr>
+                    <td class="px-2 py-1">{{ row.payment_status }}</td>
+                    <td class="px-2 py-1 text-right">{{ row.payment_count }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" class="px-2 py-4 text-center text-gray-500">No data</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% endblock %}
