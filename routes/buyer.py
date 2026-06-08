@@ -10,17 +10,18 @@ def _current_user():
     return queries.get_user(login) or queries.get_user("buyer1")
 
 
-def _stub_post_redirect():
-    flash("UI only — SQL backend not connected.", "info")
-    return redirect(request.referrer or url_for("public.home"))
-
-
 @buyer_bp.route("/account", methods=["GET", "POST"])
 def account():
     user = _current_user()
     if request.method == "POST":
-        # queries.update_user_profile(...) — wire when SQL is ready
-        return _stub_post_redirect()
+        phone_num = request.form.get("phone_num", "").strip()
+        address = request.form.get("address", "").strip()
+        if not phone_num or not address:
+            flash("Phone and address are required.", "error")
+            return redirect(url_for("buyer.account"))
+        queries.update_user_profile(user["login"], phone_num, address, user.get("favorite_category"))
+        flash("Profile updated.", "success")
+        return redirect(url_for("buyer.account"))
     return render_template("pages/buyer/account.html", user=user)
 
 
@@ -40,13 +41,18 @@ def wins():
 
 @buyer_bp.route("/payment/<int:auction_id>", methods=["GET", "POST"])
 def payment(auction_id):
+    user = _current_user()
     auction = queries.get_auction_with_item(auction_id)
     if not auction:
         abort(404)
     payment_record = queries.get_payment_for_auction(auction_id)
     if request.method == "POST":
-        # queries.process_payment(...) — wire when SQL is ready
-        return _stub_post_redirect()
+        affected = queries.process_payment(auction_id, user["login"])
+        if affected:
+            flash("Payment completed.", "success")
+        else:
+            flash("Payment failed. You must be the winner of a closed auction.", "error")
+        return redirect(url_for("buyer.payment", auction_id=auction_id))
     return render_template(
         "pages/buyer/payment.html",
         auction=auction,
