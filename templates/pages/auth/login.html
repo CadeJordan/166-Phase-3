@@ -8,17 +8,12 @@
 
     <form method="post" class="space-y-3">
         <div>
-            <label for="demo_user" class="block text-sm mb-1">Demo Account</label>
-            <select id="demo_user" name="demo_user" required class="w-full border px-2 py-1 text-sm">
-                <option value="">Choose...</option>
-                {% for user in users %}
-                <option value="{{ user.login }}">{{ user.login }} ({{ user.role }})</option>
-                {% endfor %}
-            </select>
+            <label for="login" class="block text-sm mb-1">Username</label>
+            <input type="text" id="login" name="login" required class="w-full border px-2 py-1 text-sm">
         </div>
         <div>
             <label for="password" class="block text-sm mb-1">Password</label>
-            <input type="password" id="password" name="password" class="w-full border px-2 py-1 text-sm">
+            <input type="password" id="password" name="password" required class="w-full border px-2 py-1 text-sm">
         </div>
         <button type="submit" class="btn-primary">Sign In</button>
     </form>

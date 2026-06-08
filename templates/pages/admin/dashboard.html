@@ -8,8 +8,6 @@
     <ul class="text-sm space-y-2 mb-6">
         <li>Users: {{ stats.total_users }}</li>
         <li>Active auctions: {{ stats.active_auctions }}</li>
-        <li>Pending payments: {{ stats.pending_payments }}</li>
-        <li>Pending shipments: {{ stats.pending_shipments }}</li>
     </ul>
     <p class="space-x-3 text-sm">
         <a href="{{ url_for('admin.users') }}" class="link">Users</a>

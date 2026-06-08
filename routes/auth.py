@@ -8,17 +8,23 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        demo_user = request.form.get("demo_user", "")
-        user = queries.get_user(demo_user)
+        login_name = request.form.get("login", "").strip()
+        password = request.form.get("password", "")
+
+        if not login_name or not password:
+            flash("Enter your username and password.", "error")
+            return redirect(url_for("auth.login"))
+
+        user = queries.authenticate_user(login_name, password)
         if user:
             session["demo_user"] = user["login"]
             session["demo_role"] = user["role"]
             flash(f"Signed in as {user['login']} ({user['role']})", "success")
             return redirect(url_for("public.home"))
-        flash("Please select a demo user.", "error")
+        flash("Invalid username or password.", "error")
         return redirect(url_for("auth.login"))
 
-    return render_template("pages/auth/login.html", users=queries.get_all_users())
+    return render_template("pages/auth/login.html")
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])

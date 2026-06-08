@@ -76,6 +76,11 @@ def get_user(login):
     return _fetch_one("SELECT login, phone_num, address, role, favorite_category FROM users WHERE login = %s;", (login,))
 
 
+def authenticate_user(login, password):
+    # Returns the user row only if the login/password pair matches.
+    return _fetch_one("SELECT login, phone_num, address, role, favorite_category FROM users WHERE login = %s AND password = %s;", (login, password))
+
+
 def get_item(item_id):
     return _fetch_one("SELECT item_id, item_name, category, starting_price, image_url, item_condition, description, seller_login, seller_role FROM item WHERE item_id = %s;", (item_id,))
 
