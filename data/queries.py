@@ -1,9 +1,7 @@
 import sys
-from EmbeddedSQL import EmbeddedSQL
-from data import mock_data
+from data.EmbeddedSQL import EmbeddedSQL
 
 _esql = None
-
 
 def configure_db(dbname, dbport, user, passwd=""):
     """Create one shared EmbeddedSQL connection for all query functions."""
@@ -67,17 +65,17 @@ def _next_id(table_name, column_name):
     row = _fetch_one(f"SELECT COALESCE(MAX({column_name}), 0) + 1 AS next_id FROM {table_name};")
     return row["next_id"]
 
-cursor = _conn().cursor()
-    try:
-        for query, params in statements:
-            cursor.execute(query, params)
-        _conn().commit()
-        return True
-    except Exception:
-        _conn().rollback()
-        raise
-    finally:
-        cursor.close()
+# cursor = _conn().cursor()
+#     try:
+#         for query, params in statements:
+#             cursor.execute(query, params)
+#         _conn().commit()
+#         return True
+#     except Exception:
+#         _conn().rollback()
+#         raise
+#     finally:
+#         cursor.close()
 
 
 def get_categories():
