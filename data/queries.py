@@ -1,15 +1,5 @@
-import sys
-import psycopg2
-import psycopg2.extras
+from data.db_connection import DB_CONFIG, EmbeddedSQL
 
-
-def configure_db(dbname, dbport, user, passwd=""):
-    """Create one shared EmbeddedSQL connection for all query functions."""
-    global _esql
-    if _esql is not None:
-        _esql.cleanup()
-    _esql = EmbeddedSQL(dbname, dbport, user, passwd)
-    return _esql
 
 def configure_db(dbname, dbport, user, passwd=""):
     """Set database connection info once before calling the query functions."""
@@ -19,50 +9,9 @@ def configure_db(dbname, dbport, user, passwd=""):
     DB_CONFIG["passwd"] = passwd
 
 
-class EmbeddedSQL:
-    """Small PostgreSQL helper class, same style as the previous lab file."""
-
-    def __init__(self, dbname, dbport, user, passwd=""):
-        try:
-            self._connection = psycopg2.connect(
-                database=dbname,
-                user=user,
-                password=passwd,
-                host="localhost",
-                port=dbport,
-            )
-        except Exception as e:
-            print(f"Error - Unable to Connect to Database: {e}", file=sys.stderr)
-            raise
-
-    def execute_query(self, query, params=None):
-        cursor = self._connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute(query, params)
-        rows = [dict(row) for row in cursor.fetchall()]
-        cursor.close()
-        return rows
-
-    def execute_one(self, query, params=None):
-        cursor = self._connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute(query, params)
-        row = cursor.fetchone()
-        cursor.close()
-        return dict(row) if row else None
-
-    def execute_update(self, sql, params=None):
-        cursor = self._connection.cursor()
-        cursor.execute(sql, params)
-        affected = cursor.rowcount
-        self._connection.commit()
-        cursor.close()
-        return affected
-
-    def cleanup(self):
-        try:
-            if self._connection is not None:
-                self._connection.close()
-        except Exception:
-            pass
+def cleanup():
+    """No-op: each query opens and closes its own connection."""
+    pass
 
 
 def _connect():
